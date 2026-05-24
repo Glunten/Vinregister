@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="CAVE">
   <meta name="theme-color" content="#0f0804">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230f0804'/%3E%3Ctext x='90' y='115' font-size='90' text-anchor='middle'%3E🍷%3C/text%3E%3Ctext x='90' y='158' font-size='18' text-anchor='middle' fill='%23c8a96e' font-family='Georgia,serif' letter-spacing='4'%3ECAVE%3C/text%3E%3C/svg%3E">
   <title>CAVE — Vinregister</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -441,13 +442,14 @@
     <button class="btn-cancel" onclick="closeForm()">Avbryt</button>
   </div>
   <div class="form-body">
-    <div class="photo-upload" id="photo-upload" onclick="document.getElementById('photo-input').click()">
+    <div class="photo-upload" id="photo-upload" onclick="showPhotoOptions()">
       <div class="photo-upload-inner" id="photo-placeholder">
         <div class="photo-upload-icon">📷</div>
         <div class="photo-upload-text">LÄGG TILL FOTO</div>
       </div>
     </div>
     <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(event)">
+    <input type="file" id="photo-camera" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(event)">
 
     <div class="form-grid">
       <div class="field full">
@@ -568,6 +570,15 @@ function setTag(tag) {
   currentTag = tag;
   document.getElementById("tag-buy").className = "tag-btn buy" + (tag === "köp igen" ? " active" : "");
   document.getElementById("tag-avoid").className = "tag-btn avoid" + (tag === "undvik" ? " active" : "");
+}
+
+function showPhotoOptions() {
+  const choice = confirm("Ta foto med kameran?\n\nOK = Kamera\nAvbryt = Välj från biblioteket");
+  if (choice) {
+    document.getElementById("photo-camera").click();
+  } else {
+    document.getElementById("photo-input").click();
+  }
 }
 
 function handlePhoto(e) {
