@@ -625,7 +625,7 @@ async function analyzePhoto() {
 
   try {
     // Compress image before sending to API
-    const compressed = await compressImage(currentPhoto);
+    const compressed = await compressImage(currentPhoto, 800);
     const base64 = compressed.split(",")[1];
     const mediaType = compressed.split(";")[0].split(":")[1];
 
@@ -639,7 +639,7 @@ async function analyzePhoto() {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 500,
+        max_tokens: 1000,
         messages: [{
           role: "user",
           content: [
@@ -660,7 +660,9 @@ Om du inte kan läsa ett fält, använd tom sträng "".`
 
     const data = await response.json();
     const text = data.content?.[0]?.text || "";
-    const json = JSON.parse(text.replace(/```json|```/g, "").trim());
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("Inget JSON i svaret");
+    const json = JSON.parse(match[0]);
 
     if (json.name) document.getElementById("f-name").value = json.name;
     if (json.producer) document.getElementById("f-producer").value = json.producer;
