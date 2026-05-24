@@ -315,18 +315,25 @@
     /* STARS INPUT */
     .stars-input { display: flex; gap: 6px; }
     .star-btn {
-      font-size: 28px;
+      font-size: 22px;
       cursor: pointer;
       color: var(--border2);
       background: none;
       border: none;
-      padding: 2px;
+      padding: 1px;
       line-height: 1;
       transition: transform 0.1s;
       -webkit-appearance: none;
     }
     .star-btn.filled { color: var(--gold); }
-    .star-btn:active { transform: scale(1.3); }
+    .star-btn:active { transform: scale(1.2); }
+    .rating-label {
+      font-size: 13px;
+      color: var(--gold);
+      font-family: Georgia, serif;
+      margin-left: 6px;
+      min-width: 30px;
+    }
 
     /* TAG BUTTONS */
     .tag-row { display: flex; gap: 8px; }
@@ -470,8 +477,11 @@
     </div>
 
     <div class="field">
-      <label>Betyg</label>
-      <div class="stars-input" id="stars-input"></div>
+      <label>Betyg (1–10)</label>
+      <div style="display:flex;align-items:center">
+        <div class="stars-input" id="stars-input"></div>
+        <span class="rating-label" id="rating-label"></span>
+      </div>
     </div>
 
     <div class="tag-row">
@@ -512,7 +522,18 @@ let editId = null;
 let expandedId = null;
 
 // LOAD
-try { wines = JSON.parse(localStorage.getItem("cave-wines") || "[]"); } catch(e) { wines = []; }
+try { 
+  wines = JSON.parse(localStorage.getItem("cave-wines") || "[]");
+  // Smart migration: if wines have old 1-5 scale ratings, convert to 1-10
+  if (!localStorage.getItem("cave-rating-migrated") && wines.length > 0) {
+    const needsMigration = wines.some(w => w.rating > 0 && w.rating <= 5);
+    if (needsMigration) {
+      wines = wines.map(w => ({ ...w, rating: w.rating > 0 ? w.rating * 2 : 0 }));
+      localStorage.setItem("cave-wines", JSON.stringify(wines));
+    }
+    localStorage.setItem("cave-rating-migrated", "1");
+  }
+} catch(e) { wines = []; }
 
 function save() {
   try { localStorage.setItem("cave-wines", JSON.stringify(wines)); } catch(e) {}
@@ -527,17 +548,19 @@ WINE_TYPES.forEach(t => {
   sel.appendChild(o);
 });
 
-// STARS
+// STARS (1-10, shown as 10 smaller stars)
 function buildStars(rating) {
   const wrap = document.getElementById("stars-input");
+  const label = document.getElementById("rating-label");
   wrap.innerHTML = "";
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 10; i++) {
     const btn = document.createElement("button");
     btn.className = "star-btn" + (i <= rating ? " filled" : "");
     btn.textContent = "★";
     btn.onclick = () => { currentRating = i; buildStars(i); };
     wrap.appendChild(btn);
   }
+  if (label) label.textContent = rating > 0 ? rating + "/10" : "";
 }
 buildStars(0);
 
@@ -659,12 +682,16 @@ function buildPills() {
   });
 }
 
-function starsHTML(rating, small) {
+function starsHTML(rating) {
+  // Smart convert old 1-5 ratings: if rating <= 5 and was saved before upgrade, scale up
+  // We detect old ratings by checking if they're integers 1-5 (could be old data)
+  // New ratings go up to 10. We store a version flag to know.
+  const display = rating;
   let html = '<span class="stars-sm">';
-  for (let i = 1; i <= 5; i++) {
-    html += `<span class="${i <= rating ? "filled" : ""}"">★</span>`;
+  for (let i = 1; i <= 10; i++) {
+    html += `<span class="${i <= display ? "filled" : ""}">★</span>`;
   }
-  html += '</span>';
+  html += `</span> <span style="font-size:11px;color:var(--gold);margin-left:3px">${display > 0 ? display+"/10" : ""}</span>`;
   return html;
 }
 
