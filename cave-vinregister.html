@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CAVE">
+  <meta name="theme-color" content="#0f0804">
+  <title>CAVE — Vinregister</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --gold: #c8a96e;
+      --gold-light: #dabb80;
+      --bg: #0f0804;
+      --bg2: #140d07;
+      --bg3: #1a110a;
+      --border: #2e1f10;
+      --border2: #3a2810;
+      --text: #e8d5b0;
+      --muted: #8a6a4a;
+      --muted2: #6b4f38;
+      --muted3: #4a3520;
+      --green: #6ecf8a;
+      --green-bg: #1e4a2e;
+      --red: #cf6e6e;
+      --red-bg: #4a1e1e;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding-bottom: env(safe-area-inset-bottom);
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    #header {
+      background: linear-gradient(180deg, #1a0f06 0%, rgba(15,8,4,0.97) 100%);
+      padding: 52px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .logo-title { font-size: 22px; letter-spacing: 3px; color: var(--gold); font-weight: bold; }
+    .logo-sub { font-size: 9px; letter-spacing: 4px; color: var(--muted2); margin-top: -2px; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .wine-count { font-size: 11px; color: var(--muted2); letter-spacing: 1px; }
+
+    .btn-add {
+      background: var(--gold);
+      color: #1a0f06;
+      border: none;
+      border-radius: 22px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      -webkit-appearance: none;
+    }
+    .btn-add:active { background: var(--gold-light); transform: scale(0.97); }
+
+    /* SEARCH */
+    .search-wrap { position: relative; margin-bottom: 12px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted2); font-size: 14px; pointer-events: none; }
+    .search-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px 11px 36px;
+      color: var(--text);
+      font-size: 16px; /* 16px prevents iOS zoom */
+      font-family: Georgia, serif;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .search-input:focus { border-color: var(--gold); }
+
+    /* PILLS */
+    .pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .pills::-webkit-scrollbar { display: none; }
+    .pill {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-appearance: none;
+      transition: all 0.15s;
+    }
+    .pill.active {
+      background: var(--gold);
+      color: #1a0f06;
+      border-color: transparent;
+    }
+    .pills-row { margin-bottom: 8px; }
+
+    /* MAIN */
+    #main { padding: 20px 16px 80px; }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      padding-top: 80px;
+      color: var(--muted3);
+    }
+    .empty-emoji { font-size: 52px; margin-bottom: 16px; opacity: 0.35; }
+    .empty-title { font-size: 14px; letter-spacing: 2px; }
+    .empty-sub { font-size: 11px; color: var(--border2); margin-top: 8px; letter-spacing: 1px; }
+
+    /* GRID */
+    .wine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    /* WINE CARD */
+    .wine-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .wine-card:active { transform: scale(0.98); }
+
+    .card-photo {
+      height: 110px;
+      background: linear-gradient(135deg, #1e0f06, #3a1f0e);
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+    .card-type-badge {
+      position: absolute;
+      top: 8px; left: 8px;
+      background: rgba(0,0,0,0.65);
+      border-radius: 20px;
+      padding: 3px 9px;
+      font-size: 10px;
+      color: var(--gold);
+      letter-spacing: 1px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .card-tag-badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      border-radius: 20px;
+      padding: 3px 9px;
+      font-size: 9px;
+      letter-spacing: 1px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .card-tag-badge.buy { background: rgba(30,74,46,0.85); color: var(--green); }
+    .card-tag-badge.avoid { background: rgba(74,30,30,0.85); color: var(--red); }
+    .card-emoji-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      opacity: 0.12;
+    }
+
+    .card-body { padding: 12px; }
+    .card-name { font-size: 13px; color: var(--text); font-weight: bold; margin-bottom: 2px; line-height: 1.3; }
+    .card-producer { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .stars-sm { font-size: 13px; color: var(--border2); letter-spacing: 1px; }
+    .stars-sm .filled { color: var(--gold); }
+
+    /* EXPANDED CARD */
+    .card-expanded {
+      border-top: 1px solid var(--border);
+      padding: 12px;
+      margin-top: 4px;
+    }
+    .card-detail { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .card-notes {
+      font-size: 12px;
+      color: #c8b090;
+      font-style: italic;
+      line-height: 1.6;
+      margin-top: 8px;
+      border-left: 2px solid var(--border2);
+      padding-left: 10px;
+    }
+    .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-edit, .btn-delete {
+      flex: 1; padding: 9px 0; border-radius: 8px;
+      font-size: 12px; font-family: Georgia, serif; cursor: pointer;
+      -webkit-appearance: none;
+    }
+    .btn-edit { border: 1px solid var(--border2); background: transparent; color: var(--gold); }
+    .btn-delete { border: 1px solid var(--red-bg); background: transparent; color: var(--red); }
+    .btn-edit:active { background: rgba(200,169,110,0.1); }
+    .btn-delete:active { background: rgba(207,110,110,0.1); }
+
+    /* FORM PANEL */
+    #form-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--bg);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #form-panel.open { display: block; }
+
+    .form-header {
+      background: linear-gradient(180deg, #1a0f06 0%, rgba(15,8,4,0.97) 100%);
+      padding: 52px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .form-title { font-size: 14px; letter-spacing: 2px; color: var(--gold); }
+    .btn-cancel {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      padding: 8px 0;
+    }
+
+    .form-body { padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* PHOTO UPLOAD */
+    .photo-upload {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      border: 2px dashed #4a3728;
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+    }
+    .photo-upload-inner { text-align: center; color: var(--muted2); }
+    .photo-upload-icon { font-size: 30px; margin-bottom: 6px; }
+    .photo-upload-text { font-size: 11px; letter-spacing: 1px; }
+
+    /* FORM GRID */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .full { grid-column: 1 / -1; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .field input, .field select, .field textarea {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 11px 12px;
+      color: var(--text);
+      font-size: 16px; /* prevents iOS zoom */
+      font-family: Georgia, serif;
+      outline: none;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
+    .field textarea { resize: vertical; line-height: 1.5; }
+    .field select { cursor: pointer; }
+
+    /* STARS INPUT */
+    .stars-input { display: flex; gap: 6px; }
+    .star-btn {
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--border2);
+      background: none;
+      border: none;
+      padding: 2px;
+      line-height: 1;
+      transition: transform 0.1s;
+      -webkit-appearance: none;
+    }
+    .star-btn.filled { color: var(--gold); }
+    .star-btn:active { transform: scale(1.3); }
+
+    /* TAG BUTTONS */
+    .tag-row { display: flex; gap: 8px; }
+    .tag-btn {
+      flex: 1; padding: 12px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: var(--bg3);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      font-family: Georgia, serif;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+    }
+    .tag-btn.buy.active { background: var(--green-bg); border-color: transparent; color: var(--green); }
+    .tag-btn.avoid.active { background: var(--red-bg); border-color: transparent; color: var(--red); }
+
+    /* SAVE BUTTON */
+    .btn-save {
+      width: 100%; padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: var(--gold);
+      color: #1a0f06;
+      font-size: 14px;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-top: 4px;
+      -webkit-appearance: none;
+    }
+    .btn-save:active { background: var(--gold-light); transform: scale(0.99); }
+
+    /* INSTALL BANNER */
+    #install-banner {
+      display: none;
+      background: #1a2e1a;
+      border: 1px solid #2e4a2e;
+      border-radius: 12px;
+      margin: 12px 16px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--green);
+      line-height: 1.5;
+    }
+    #install-banner strong { display: block; margin-bottom: 4px; font-size: 13px; }
+    .dismiss-banner {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: -4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- MAIN APP -->
+<div id="header">
+  <div class="header-top">
+    <div>
+      <div class="logo-title">CAVE</div>
+      <div class="logo-sub">VINREGISTER</div>
+    </div>
+    <div class="header-right">
+      <span class="wine-count" id="wine-count">0 viner</span>
+      <button class="btn-add" onclick="openForm()">+ Lägg till</button>
+    </div>
+  </div>
+  <div id="list-controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="search" id="search" placeholder="Sök namn, producent, region…" oninput="render()" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="pills pills-row" id="type-pills"></div>
+    <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+      <div class="pills" id="tag-pills"></div>
+      <div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">
+        <div class="pills" id="sort-pills"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="install-banner">
+  <button class="dismiss-banner" onclick="this.parentElement.style.display='none'">×</button>
+  <strong>📱 Lägg till på hemskärmen</strong>
+  Tryck på dela-ikonen (□↑) i Safari och välj "Lägg till på hemskärmen" för att använda som app.
+</div>
+
+<div id="main">
+  <div id="wine-list"></div>
+</div>
+
+<!-- FORM PANEL -->
+<div id="form-panel">
+  <div class="form-header">
+    <div class="form-title" id="form-title">NYTT VIN</div>
+    <button class="btn-cancel" onclick="closeForm()">Avbryt</button>
+  </div>
+  <div class="form-body">
+    <div class="photo-upload" id="photo-upload" onclick="document.getElementById('photo-input').click()">
+      <div class="photo-upload-inner" id="photo-placeholder">
+        <div class="photo-upload-icon">📷</div>
+        <div class="photo-upload-text">LÄGG TILL FOTO</div>
+      </div>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(event)">
+
+    <div class="form-grid">
+      <div class="field full">
+        <label>Vinets namn</label>
+        <input type="text" id="f-name" placeholder="t.ex. Barolo Reserva">
+      </div>
+      <div class="field">
+        <label>Producent</label>
+        <input type="text" id="f-producer" placeholder="t.ex. Giacomo Conterno">
+      </div>
+      <div class="field">
+        <label>Årgång</label>
+        <input type="number" id="f-vintage" placeholder="t.ex. 2019" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>Region</label>
+        <input type="text" id="f-region" placeholder="t.ex. Piemonte, Italien">
+      </div>
+      <div class="field">
+        <label>Pris (kr)</label>
+        <input type="number" id="f-price" placeholder="t.ex. 349" inputmode="numeric">
+      </div>
+      <div class="field full">
+        <label>Vintyp</label>
+        <select id="f-type"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Betyg</label>
+      <div class="stars-input" id="stars-input"></div>
+    </div>
+
+    <div class="tag-row">
+      <button class="tag-btn buy active" id="tag-buy" onclick="setTag('köp igen')">✓ Köp igen</button>
+      <button class="tag-btn avoid" id="tag-avoid" onclick="setTag('undvik')">✕ Undvik</button>
+    </div>
+
+    <div class="field">
+      <label>Anteckningar</label>
+      <textarea id="f-notes" rows="3" placeholder="Smak, doft, tillfälle…"></textarea>
+    </div>
+
+    <button class="btn-save" onclick="saveWine()">Spara vin</button>
+  </div>
+</div>
+
+<script>
+const WINE_TYPES = [
+  { value: "rött", label: "Rött", emoji: "🍷" },
+  { value: "vitt", label: "Vitt", emoji: "🥂" },
+  { value: "rosé", label: "Rosé", emoji: "🌸" },
+  { value: "prosecco", label: "Prosecco", emoji: "✨" },
+  { value: "champagne", label: "Champagne", emoji: "🍾" },
+  { value: "mousserande", label: "Mousserande", emoji: "💫" },
+  { value: "cava", label: "Cava", emoji: "🎊" },
+  { value: "dessertvin", label: "Dessertvin", emoji: "🍯" },
+  { value: "portvin", label: "Portvin", emoji: "🏺" },
+];
+
+let wines = [];
+let filterType = "alla";
+let filterTag = "alla";
+let sortBy = "nyast";
+let currentRating = 0;
+let currentTag = "köp igen";
+let currentPhoto = null;
+let editId = null;
+let expandedId = null;
+
+// LOAD
+try { wines = JSON.parse(localStorage.getItem("cave-wines") || "[]"); } catch(e) { wines = []; }
+
+function save() {
+  try { localStorage.setItem("cave-wines", JSON.stringify(wines)); } catch(e) {}
+}
+
+// BUILD SELECT
+const sel = document.getElementById("f-type");
+WINE_TYPES.forEach(t => {
+  const o = document.createElement("option");
+  o.value = t.value;
+  o.textContent = t.emoji + " " + t.label;
+  sel.appendChild(o);
+});
+
+// STARS
+function buildStars(rating) {
+  const wrap = document.getElementById("stars-input");
+  wrap.innerHTML = "";
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.createElement("button");
+    btn.className = "star-btn" + (i <= rating ? " filled" : "");
+    btn.textContent = "★";
+    btn.onclick = () => { currentRating = i; buildStars(i); };
+    wrap.appendChild(btn);
+  }
+}
+buildStars(0);
+
+function setTag(tag) {
+  currentTag = tag;
+  document.getElementById("tag-buy").className = "tag-btn buy" + (tag === "köp igen" ? " active" : "");
+  document.getElementById("tag-avoid").className = "tag-btn avoid" + (tag === "undvik" ? " active" : "");
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentPhoto = ev.target.result;
+    const el = document.getElementById("photo-upload");
+    el.style.backgroundImage = `url(${currentPhoto})`;
+    document.getElementById("photo-placeholder").style.display = "none";
+  };
+  reader.readAsDataURL(file);
+}
+
+// FORM OPEN/CLOSE
+function openForm(wine) {
+  editId = wine ? wine.id : null;
+  document.getElementById("form-title").textContent = wine ? "REDIGERA VIN" : "NYTT VIN";
+  document.getElementById("f-name").value = wine ? wine.name : "";
+  document.getElementById("f-producer").value = wine ? wine.producer : "";
+  document.getElementById("f-vintage").value = wine ? wine.vintage : "";
+  document.getElementById("f-region").value = wine ? wine.region : "";
+  document.getElementById("f-price").value = wine ? wine.price : "";
+  document.getElementById("f-type").value = wine ? wine.type : "rött";
+  document.getElementById("f-notes").value = wine ? wine.notes : "";
+  currentRating = wine ? wine.rating : 0;
+  currentTag = wine ? wine.tag : "köp igen";
+  currentPhoto = wine ? wine.photo : null;
+  buildStars(currentRating);
+  setTag(currentTag);
+  const pu = document.getElementById("photo-upload");
+  pu.style.backgroundImage = currentPhoto ? `url(${currentPhoto})` : "";
+  document.getElementById("photo-placeholder").style.display = currentPhoto ? "none" : "flex";
+  document.getElementById("photo-input").value = "";
+  document.getElementById("form-panel").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeForm() {
+  document.getElementById("form-panel").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function saveWine() {
+  const name = document.getElementById("f-name").value.trim();
+  if (!name) { document.getElementById("f-name").focus(); return; }
+  const wine = {
+    id: editId || Date.now().toString(),
+    name,
+    producer: document.getElementById("f-producer").value.trim(),
+    vintage: document.getElementById("f-vintage").value.trim(),
+    region: document.getElementById("f-region").value.trim(),
+    price: document.getElementById("f-price").value.trim(),
+    type: document.getElementById("f-type").value,
+    notes: document.getElementById("f-notes").value.trim(),
+    rating: currentRating,
+    tag: currentTag,
+    photo: currentPhoto,
+  };
+  if (editId) {
+    wines = wines.map(w => w.id === editId ? wine : w);
+  } else {
+    wines.unshift(wine);
+  }
+  save();
+  closeForm();
+  render();
+}
+
+function deleteWine(id) {
+  if (!confirm("Ta bort vinet?")) return;
+  wines = wines.filter(w => w.id !== id);
+  if (expandedId === id) expandedId = null;
+  save();
+  render();
+}
+
+// PILLS
+function buildPills() {
+  // Type pills
+  const tp = document.getElementById("type-pills");
+  tp.innerHTML = "";
+  [{ value: "alla", label: "Alla typer", emoji: "" }, ...WINE_TYPES].forEach(t => {
+    const b = document.createElement("button");
+    b.className = "pill" + (filterType === t.value ? " active" : "");
+    b.textContent = (t.emoji ? t.emoji + " " : "") + t.label;
+    b.onclick = () => { filterType = t.value; render(); };
+    tp.appendChild(b);
+  });
+
+  // Tag pills
+  const tagp = document.getElementById("tag-pills");
+  tagp.innerHTML = "";
+  [["alla", "Alla"], ["köp igen", "✓ Köp igen"], ["undvik", "✕ Undvik"]].forEach(([v, l]) => {
+    const b = document.createElement("button");
+    b.className = "pill" + (filterTag === v ? " active" : "");
+    b.textContent = l;
+    b.onclick = () => { filterTag = v; render(); };
+    tagp.appendChild(b);
+  });
+
+  // Sort pills
+  const sp = document.getElementById("sort-pills");
+  sp.innerHTML = "";
+  [["nyast","Nyast"],["betyg","Betyg"],["pris","Pris"],["årgång","Årgång"]].forEach(([v, l]) => {
+    const b = document.createElement("button");
+    b.className = "pill" + (sortBy === v ? " active" : "");
+    b.textContent = l;
+    b.onclick = () => { sortBy = v; render(); };
+    sp.appendChild(b);
+  });
+}
+
+function starsHTML(rating, small) {
+  let html = '<span class="stars-sm">';
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="${i <= rating ? "filled" : ""}"">★</span>`;
+  }
+  html += '</span>';
+  return html;
+}
+
+function render() {
+  buildPills();
+  const q = (document.getElementById("search").value || "").toLowerCase();
+  let list = wines.filter(w => {
+    return (
+      (!q || w.name.toLowerCase().includes(q) || (w.producer||"").toLowerCase().includes(q) || (w.region||"").toLowerCase().includes(q)) &&
+      (filterType === "alla" || w.type === filterType) &&
+      (filterTag === "alla" || w.tag === filterTag)
+    );
+  }).sort((a, b) => {
+    if (sortBy === "nyast") return b.id - a.id;
+    if (sortBy === "betyg") return b.rating - a.rating;
+    if (sortBy === "pris") return Number(a.price||0) - Number(b.price||0);
+    if (sortBy === "årgång") return Number(b.vintage||0) - Number(a.vintage||0);
+    return 0;
+  });
+
+  const countEl = document.getElementById("wine-count");
+  countEl.textContent = wines.length + " vin" + (wines.length !== 1 ? "er" : "");
+
+  const container = document.getElementById("wine-list");
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-emoji">🍷</div>
+        <div class="empty-title">${wines.length === 0 ? "Källaren är tom" : "Inga vin matchar"}</div>
+        <div class="empty-sub">${wines.length === 0 ? "Lägg till ditt första vin ovan" : "Prova andra filter"}</div>
+      </div>`;
+    return;
+  }
+
+  const typeMap = {};
+  WINE_TYPES.forEach(t => typeMap[t.value] = t);
+
+  container.innerHTML = `<div class="wine-grid">${list.map(wine => {
+    const t = typeMap[wine.type] || WINE_TYPES[0];
+    const expanded = expandedId === wine.id;
+    const photoStyle = wine.photo ? `background-image:url(${wine.photo});background-size:cover;background-position:center;` : "";
+    return `
+      <div class="wine-card" id="card-${wine.id}" onclick="toggleCard('${wine.id}')">
+        <div class="card-photo" style="${photoStyle}">
+          ${!wine.photo ? `<div class="card-emoji-bg">${t.emoji}</div>` : ""}
+          <div class="card-type-badge">${t.emoji} ${t.label}</div>
+          <div class="card-tag-badge ${wine.tag === 'köp igen' ? 'buy' : 'avoid'}">${wine.tag === 'köp igen' ? '✓ Köp igen' : '✕ Undvik'}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-name">${escHtml(wine.name)}</div>
+          <div class="card-producer">${[wine.producer, wine.vintage].filter(Boolean).map(escHtml).join(" · ") || "&nbsp;"}</div>
+          ${starsHTML(wine.rating)}
+          ${expanded ? `
+            <div class="card-expanded">
+              ${wine.region ? `<div class="card-detail">📍 ${escHtml(wine.region)}</div>` : ""}
+              ${wine.price ? `<div class="card-detail">💰 ${escHtml(wine.price)} kr</div>` : ""}
+              ${wine.notes ? `<div class="card-notes">${escHtml(wine.notes)}</div>` : ""}
+              <div class="card-actions">
+                <button class="btn-edit" onclick="event.stopPropagation();editWine('${wine.id}')">Redigera</button>
+                <button class="btn-delete" onclick="event.stopPropagation();deleteWine('${wine.id}')">Ta bort</button>
+              </div>
+            </div>` : ""}
+        </div>
+      </div>`;
+  }).join("")}</div>`;
+}
+
+function escHtml(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function toggleCard(id) {
+  expandedId = expandedId === id ? null : id;
+  render();
+  if (expandedId) {
+    setTimeout(() => {
+      const el = document.getElementById("card-" + id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 50);
+  }
+}
+
+function editWine(id) {
+  const wine = wines.find(w => w.id === id);
+  if (wine) openForm(wine);
+}
+
+// iOS install banner
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone;
+const bannerDismissed = localStorage.getItem("cave-banner-dismissed");
+if (isIOS && !isStandalone && !bannerDismissed) {
+  const banner = document.getElementById("install-banner");
+  banner.style.display = "block";
+  banner.querySelector(".dismiss-banner").addEventListener("click", () => {
+    localStorage.setItem("cave-banner-dismissed", "1");
+  });
+}
+
+render();
+</script>
+</body>
+</html>
