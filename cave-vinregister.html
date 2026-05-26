@@ -1,691 +1,833 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CAVE">
-  <meta name="theme-color" content="#0f0804">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230f0804'/%3E%3Ctext x='90' y='115' font-size='90' text-anchor='middle'%3E🍷%3C/text%3E%3Ctext x='90' y='158' font-size='18' text-anchor='middle' fill='%23c8a96e' font-family='Georgia,serif' letter-spacing='4'%3ECAVE%3C/text%3E%3C/svg%3E">
-  <title>CAVE — Vinregister</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vinregistret">
+<meta name="theme-color" content="#070404">
+<title>Vinregistret</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --gold: #c8a96e;
-      --gold-light: #dabb80;
-      --bg: #0f0804;
-      --bg2: #140d07;
-      --bg3: #1a110a;
-      --border: #2e1f10;
-      --border2: #3a2810;
-      --text: #e8d5b0;
-      --muted: #8a6a4a;
-      --muted2: #6b4f38;
-      --muted3: #4a3520;
-      --green: #6ecf8a;
-      --green-bg: #1e4a2e;
-      --red: #cf6e6e;
-      --red-bg: #4a1e1e;
-    }
+  :root {
+    --gold: #c8a96e;
+    --gold-dim: rgba(200,169,110,0.15);
+    --red: #8b3a3a;
+    --red-dim: rgba(139,58,58,0.15);
+    --bg: #070404;
+    --surface: rgba(255,255,255,0.035);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0e6d3;
+    --text-muted: #8a7a6a;
+    --text-dim: #5a4a3a;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Georgia, 'Times New Roman', serif;
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      padding-bottom: env(safe-area-inset-bottom);
-      overflow-x: hidden;
-    }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--serif);
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
 
-    /* HEADER */
-    #header {
-      background: linear-gradient(180deg, #1a0f06 0%, rgba(15,8,4,0.97) 100%);
-      padding: 52px 20px 16px;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
+  body {
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(120,40,20,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(80,30,10,0.1) 0%, transparent 50%);
+    min-height: 100vh;
+  }
 
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
+  /* HEADER */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7,4,4,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(200,169,110,0.12);
+    padding: calc(var(--safe-top) + 16px) 20px 16px;
+  }
 
-    .logo-title { font-size: 22px; letter-spacing: 3px; color: var(--gold); font-weight: bold; }
-    .logo-sub { font-size: 9px; letter-spacing: 4px; color: var(--muted2); margin-top: -2px; }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
 
-    .header-right { display: flex; align-items: center; gap: 10px; }
-    .wine-count { font-size: 11px; color: var(--muted2); letter-spacing: 1px; }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
 
-    .btn-add {
-      background: var(--gold);
-      color: #1a0f06;
-      border: none;
-      border-radius: 22px;
-      padding: 10px 18px;
-      font-size: 14px;
-      font-family: Georgia, serif;
-      font-weight: bold;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-      -webkit-appearance: none;
-    }
-    .btn-add:active { background: var(--gold-light); transform: scale(0.97); }
+  .add-btn {
+    background: linear-gradient(135deg, var(--gold), #a07840);
+    border: none;
+    border-radius: 50px;
+    color: #0f0808;
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 8px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    -webkit-appearance: none;
+  }
 
-    /* SEARCH */
-    .search-wrap { position: relative; margin-bottom: 12px; }
-    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted2); font-size: 14px; pointer-events: none; }
-    .search-input {
-      width: 100%;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px 12px 11px 36px;
-      color: var(--text);
-      font-size: 16px; /* 16px prevents iOS zoom */
-      font-family: Georgia, serif;
-      outline: none;
-      -webkit-appearance: none;
-    }
-    .search-input:focus { border-color: var(--gold); }
+  .stats {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
 
-    /* PILLS */
-    .pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-    .pills::-webkit-scrollbar { display: none; }
-    .pill {
-      padding: 7px 14px;
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 14px;
+    text-align: center;
+    flex: 1;
+  }
+
+  .stat-num { font-size: 20px; font-weight: 700; }
+  .stat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .controls::-webkit-scrollbar { display: none; }
+
+  .search-input {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 15px;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    -webkit-appearance: none;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-family: var(--serif);
+    font-size: 13px;
+    padding: 8px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    -webkit-appearance: none;
+    transition: all 0.2s;
+  }
+
+  .filter-btn.active-all { border-color: rgba(200,169,110,0.4); color: var(--gold); background: var(--gold-dim); }
+  .filter-btn.active-buy { border-color: rgba(200,169,110,0.4); color: var(--gold); background: var(--gold-dim); }
+  .filter-btn.active-avoid { border-color: rgba(139,58,58,0.4); color: var(--red); background: var(--red-dim); }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    padding: 20px 16px calc(var(--safe-bottom) + 20px);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 500px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+
+  .card:active { transform: scale(0.97); }
+
+  .card-photo {
+    height: 180px;
+    background: linear-gradient(135deg, #1a0a0a 0%, #2d1515 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+  }
+
+  .card-photo-placeholder { font-size: 40px; opacity: 0.3; position: relative; z-index: 1; }
+
+  .badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 2;
+  }
+
+  .badge-buy { background: rgba(200,169,110,0.2); border: 1px solid var(--gold); color: var(--gold); }
+  .badge-avoid { background: rgba(139,58,58,0.2); border: 1px solid var(--red); color: var(--red); }
+
+  .card-body { padding: 12px; }
+
+  .card-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+
+  .card-producer {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+
+  .tag-year { color: var(--gold); background: rgba(200,169,110,0.1); }
+  .tag-region { color: #9a8a7a; background: rgba(255,255,255,0.05); }
+  .tag-price { color: #9a9a9a; background: rgba(255,255,255,0.05); }
+
+  .stars { font-size: 13px; margin-bottom: 6px; }
+  .star-on { color: var(--gold); }
+  .star-off { color: rgba(255,255,255,0.1); }
+
+  .card-notes {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* EMPTY */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dim);
+  }
+  .empty-icon { font-size: 60px; margin-bottom: 16px; }
+  .empty-text { font-size: 18px; font-style: italic; }
+
+  /* MODAL OVERLAY */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  @media (min-height: 700px) and (min-width: 500px) {
+    .overlay { align-items: center; }
+  }
+
+  /* FORM SHEET */
+  .sheet {
+    background: #0f0808;
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px calc(var(--safe-bottom) + 24px);
+    width: 100%;
+    max-width: 560px;
+    max-height: 92vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (min-width: 500px) and (min-height: 700px) {
+    .sheet {
       border-radius: 20px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 1px;
-      font-family: Georgia, serif;
-      cursor: pointer;
-      white-space: nowrap;
-      -webkit-appearance: none;
-      transition: all 0.15s;
+      max-height: 90vh;
     }
-    .pill.active {
-      background: var(--gold);
-      color: #1a0f06;
-      border-color: transparent;
-    }
-    .pills-row { margin-bottom: 8px; }
+  }
 
-    /* MAIN */
-    #main { padding: 20px 16px 80px; }
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
 
-    /* EMPTY */
-    .empty {
-      text-align: center;
-      padding-top: 80px;
-      color: var(--muted3);
-    }
-    .empty-emoji { font-size: 52px; margin-bottom: 16px; opacity: 0.35; }
-    .empty-title { font-size: 14px; letter-spacing: 2px; }
-    .empty-sub { font-size: 11px; color: var(--border2); margin-top: 8px; letter-spacing: 1px; }
+  .sheet-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
 
-    /* GRID */
-    .wine-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 14px;
-    }
+  /* PHOTO UPLOAD */
+  .photo-upload {
+    height: 150px;
+    background: rgba(255,255,255,0.03);
+    border: 2px dashed rgba(200,169,110,0.25);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-bottom: 16px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.2s;
+  }
 
-    /* WINE CARD */
-    .wine-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
-    .wine-card:active { transform: scale(0.98); }
+  .photo-upload:active { border-color: var(--gold); }
 
-    .card-photo {
-      height: 110px;
-      background: linear-gradient(135deg, #1e0f06, #3a1f0e);
-      position: relative;
-      background-size: cover;
-      background-position: center;
-      overflow: hidden;
-    }
-    .card-type-badge {
-      position: absolute;
-      top: 8px; left: 8px;
-      background: rgba(0,0,0,0.65);
-      border-radius: 20px;
-      padding: 3px 9px;
-      font-size: 10px;
-      color: var(--gold);
-      letter-spacing: 1px;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-    .card-tag-badge {
-      position: absolute;
-      top: 8px; right: 8px;
-      border-radius: 20px;
-      padding: 3px 9px;
-      font-size: 9px;
-      letter-spacing: 1px;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-    .card-tag-badge.buy { background: rgba(30,74,46,0.85); color: var(--green); }
-    .card-tag-badge.avoid { background: rgba(74,30,30,0.85); color: var(--red); }
-    .card-emoji-bg {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 44px;
-      opacity: 0.12;
-    }
+  .photo-upload img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    .card-body { padding: 12px; }
-    .card-name { font-size: 13px; color: var(--text); font-weight: bold; margin-bottom: 2px; line-height: 1.3; }
-    .card-producer { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-    .stars-sm { font-size: 13px; color: var(--border2); letter-spacing: 1px; }
-    .stars-sm .filled { color: var(--gold); }
+  .photo-placeholder { text-align: center; color: var(--text-dim); position: relative; z-index: 1; }
+  .photo-placeholder-icon { font-size: 28px; margin-bottom: 6px; }
+  .photo-placeholder-text { font-size: 13px; }
 
-    /* EXPANDED CARD */
-    .card-expanded {
-      border-top: 1px solid var(--border);
-      padding: 12px;
-      margin-top: 4px;
-    }
-    .card-detail { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .card-notes {
-      font-size: 12px;
-      color: #c8b090;
-      font-style: italic;
-      line-height: 1.6;
-      margin-top: 8px;
-      border-left: 2px solid var(--border2);
-      padding-left: 10px;
-    }
-    .card-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .btn-edit, .btn-delete {
-      flex: 1; padding: 9px 0; border-radius: 8px;
-      font-size: 12px; font-family: Georgia, serif; cursor: pointer;
-      -webkit-appearance: none;
-    }
-    .btn-edit { border: 1px solid var(--border2); background: transparent; color: var(--gold); }
-    .btn-delete { border: 1px solid var(--red-bg); background: transparent; color: var(--red); }
-    .btn-edit:active { background: rgba(200,169,110,0.1); }
-    .btn-delete:active { background: rgba(207,110,110,0.1); }
+  .wine-type-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+  }
 
-    /* FORM PANEL */
-    #form-panel {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      background: var(--bg);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    #form-panel.open { display: block; }
+  .type-btn {
+    padding: 8px 4px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: var(--serif);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+    text-align: center;
+  }
 
-    .form-header {
-      background: linear-gradient(180deg, #1a0f06 0%, rgba(15,8,4,0.97) 100%);
-      padding: 52px 20px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .form-title { font-size: 14px; letter-spacing: 2px; color: var(--gold); }
-    .btn-cancel {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      font-size: 14px;
-      font-family: Georgia, serif;
-      cursor: pointer;
-      padding: 8px 0;
-    }
+  .type-btn.active {
+    border-color: rgba(200,169,110,0.5);
+    color: var(--gold);
+    background: var(--gold-dim);
+  }
 
-    .form-body { padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+  /* STATUS TOGGLE */
+  .status-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
 
-    /* PHOTO UPLOAD */
-    .photo-upload {
-      width: 100%;
-      height: 160px;
-      border-radius: 12px;
-      border: 2px dashed #4a3728;
-      background: var(--bg3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      background-size: cover;
-      background-position: center;
-    }
-    .photo-upload-inner { text-align: center; color: var(--muted2); }
-    .photo-upload-icon { font-size: 30px; margin-bottom: 6px; }
-    .photo-upload-text { font-size: 11px; letter-spacing: 1px; }
+  .status-btn {
+    padding: 11px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
 
-    /* FORM GRID */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .full { grid-column: 1 / -1; }
+  .status-btn.active-buy { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+  .status-btn.active-avoid { border-color: var(--red); color: var(--red); background: var(--red-dim); }
 
-    .field { display: flex; flex-direction: column; gap: 5px; }
-    .field label {
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    .field input, .field select, .field textarea {
-      background: var(--bg3);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      padding: 11px 12px;
-      color: var(--text);
-      font-size: 16px; /* prevents iOS zoom */
-      font-family: Georgia, serif;
-      outline: none;
-      width: 100%;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
-    .field textarea { resize: vertical; line-height: 1.5; }
-    .field select { cursor: pointer; }
+  /* FORM FIELDS */
+  .field { margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 
-    /* STARS INPUT */
-    .stars-input { display: flex; gap: 6px; }
-    .star-btn {
-      font-size: 22px;
-      cursor: pointer;
-      color: var(--border2);
-      background: none;
-      border: none;
-      padding: 1px;
-      line-height: 1;
-      transition: transform 0.1s;
-      -webkit-appearance: none;
-    }
-    .star-btn.filled { color: var(--gold); }
-    .star-btn:active { transform: scale(1.2); }
-    .rating-label {
-      font-size: 13px;
-      color: var(--gold);
-      font-family: Georgia, serif;
-      margin-left: 6px;
-      min-width: 30px;
-    }
+  .field-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
 
-    /* TAG BUTTONS */
-    .tag-row { display: flex; gap: 8px; }
-    .tag-btn {
-      flex: 1; padding: 12px 0;
-      border-radius: 8px;
-      border: 1px solid var(--border2);
-      background: var(--bg3);
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      font-family: Georgia, serif;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.2s;
-      -webkit-appearance: none;
-    }
-    .tag-btn.buy.active { background: var(--green-bg); border-color: transparent; color: var(--green); }
-    .tag-btn.avoid.active { background: var(--red-bg); border-color: transparent; color: var(--red); }
+  .field-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 16px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
 
-    .btn-analyze {
-      width: 100%;
-      padding: 11px;
-      border-radius: 10px;
-      border: 1px solid var(--gold);
-      background: rgba(200,169,110,0.1);
-      color: var(--gold);
-      font-size: 13px;
-      font-family: Georgia, serif;
-      letter-spacing: 1px;
-      cursor: pointer;
-      margin-top: -4px;
-      -webkit-appearance: none;
-      transition: background 0.2s;
-    }
-    .btn-analyze:active { background: rgba(200,169,110,0.2); }
-    .btn-analyze:disabled { opacity: 0.5; cursor: default; }
-    .analyze-status {
-      font-size: 12px;
-      color: var(--muted);
-      font-style: italic;
-      text-align: center;
-      min-height: 18px;
-    }
-    .btn-save {
-      width: 100%; padding: 14px;
-      border-radius: 10px;
-      border: none;
-      background: var(--gold);
-      color: #1a0f06;
-      font-size: 14px;
-      font-family: Georgia, serif;
-      font-weight: bold;
-      letter-spacing: 1px;
-      cursor: pointer;
-      margin-top: 4px;
-      -webkit-appearance: none;
-    }
-    .btn-save:active { background: var(--gold-light); transform: scale(0.99); }
+  .field-input:focus { border-color: rgba(200,169,110,0.4); }
 
-    /* INSTALL BANNER */
-    #install-banner {
-      display: none;
-      background: #1a2e1a;
-      border: 1px solid #2e4a2e;
-      border-radius: 12px;
-      margin: 12px 16px;
-      padding: 12px 16px;
-      font-size: 12px;
-      color: var(--green);
-      line-height: 1.5;
-    }
-    #install-banner strong { display: block; margin-bottom: 4px; font-size: 13px; }
-    .dismiss-banner {
-      float: right;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 18px;
-      cursor: pointer;
-      margin-top: -4px;
-    }
-  </style>
+  textarea.field-input {
+    min-height: 72px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  /* STARS INPUT */
+  .stars-input { display: flex; gap: 10px; margin-top: 4px; }
+  .star-btn {
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.1s;
+    -webkit-appearance: none;
+    line-height: 1;
+  }
+  .star-btn:active { transform: scale(1.3); }
+
+  /* FORM ACTIONS */
+  .form-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+  .save-btn {
+    flex: 1;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--gold), #a07840);
+    border: none;
+    border-radius: 12px;
+    color: #0f0808;
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    -webkit-appearance: none;
+  }
+
+  .cancel-btn {
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-dim);
+    font-family: var(--serif);
+    font-size: 16px;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+
+  .delete-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(139,58,58,0.08);
+    border: 1px solid rgba(139,58,58,0.25);
+    border-radius: 12px;
+    color: var(--red);
+    font-family: var(--serif);
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    -webkit-appearance: none;
+  }
+
+  /* DETAIL VIEW */
+  .detail-photo {
+    height: 260px;
+    background: linear-gradient(135deg, #1a0a0a 0%, #2d1515 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    margin-bottom: 20px;
+  }
+
+  .detail-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+  .detail-name { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .detail-producer { font-size: 16px; color: var(--text-muted); font-style: italic; margin-bottom: 14px; }
+  .detail-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .detail-tag { font-size: 13px; padding: 4px 14px; border-radius: 12px; }
+  .detail-stars { font-size: 22px; margin-bottom: 14px; }
+  .detail-notes { font-size: 15px; color: var(--text-muted); line-height: 1.7; font-style: italic; margin-bottom: 20px; }
+  .detail-actions { display: flex; gap: 10px; }
+  .edit-btn {
+    flex: 1; padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-family: var(--serif);
+    font-size: 15px;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+</style>
 </head>
 <body>
 
-<!-- MAIN APP -->
-<div id="header">
+<div class="header">
   <div class="header-top">
-    <div>
-      <div class="logo-title">CAVE</div>
-      <div class="logo-sub">VINREGISTER</div>
+    <h1>🍷 Vinregistret</h1>
+    <button class="add-btn" onclick="openForm()">+ Lägg till</button>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="stat-total" style="color:#9a8a7a">0</div>
+      <div class="stat-label">Totalt</div>
     </div>
-    <div class="header-right">
-      <span class="wine-count" id="wine-count">0 viner</span>
-      <button class="btn-add" onclick="openForm()">+ Lägg till</button>
+    <div class="stat">
+      <div class="stat-num" id="stat-buy" style="color:#c8a96e">0</div>
+      <div class="stat-label">Köp igen</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="stat-avoid" style="color:#8b3a3a">0</div>
+      <div class="stat-label">Undvik</div>
     </div>
   </div>
-  <div id="list-controls">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" type="search" id="search" placeholder="Sök namn, producent, region…" oninput="render()" autocomplete="off" autocorrect="off" spellcheck="false">
-    </div>
-    <div class="pills pills-row" id="type-pills"></div>
-    <div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
-      <div class="pills" id="tag-pills"></div>
-      <div style="margin-left:auto;display:flex;gap:6px;flex-shrink:0">
-        <div class="pills" id="sort-pills"></div>
-      </div>
-    </div>
+  <div class="controls">
+    <input class="search-input" id="search" placeholder="Sök..." oninput="renderGrid()" style="min-width:120px">
+    <button class="filter-btn active-all" id="f-all" onclick="setFilter('all')">Alla</button>
+    <button class="filter-btn" id="f-buy" onclick="setFilter('buy')">✦ Köp</button>
+    <button class="filter-btn" id="f-avoid" onclick="setFilter('avoid')">✕ Undvik</button>
   </div>
 </div>
 
-<div id="install-banner">
-  <button class="dismiss-banner" onclick="this.parentElement.style.display='none'">×</button>
-  <strong>📱 Lägg till på hemskärmen</strong>
-  Tryck på dela-ikonen (□↑) i Safari och välj "Lägg till på hemskärmen" för att använda som app.
-</div>
+<div id="grid-container"></div>
 
-<div id="main">
-  <div id="wine-list"></div>
-</div>
+<!-- FORM OVERLAY -->
+<div class="overlay" id="form-overlay" style="display:none" onclick="overlayClickForm(event)">
+  <div class="sheet" id="form-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="form-title">Registrera vin</div>
 
-<!-- FORM PANEL -->
-<div id="form-panel">
-  <div class="form-header">
-    <div class="form-title" id="form-title">NYTT VIN</div>
-    <button class="btn-cancel" onclick="closeForm()">Avbryt</button>
-  </div>
-  <div class="form-body">
-    <div class="photo-upload" id="photo-upload" onclick="showPhotoOptions()">
-      <div class="photo-upload-inner" id="photo-placeholder">
-        <div class="photo-upload-icon">📷</div>
-        <div class="photo-upload-text">LÄGG TILL FOTO</div>
+    <div class="photo-upload" id="photo-upload-area" onclick="document.getElementById('photo-input').click()">
+      <img id="photo-preview" src="" style="display:none">
+      <div class="photo-placeholder" id="photo-placeholder">
+        <div class="photo-placeholder-icon">📷</div>
+        <div class="photo-placeholder-text">Tryck för att ta foto eller välj bild</div>
       </div>
     </div>
-    <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(event)">
-    <input type="file" id="photo-camera" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(event)">
+    <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(event)">
 
-    <button class="btn-analyze" id="btn-analyze" onclick="analyzePhoto()" disabled>✦ Analysera etikett med AI</button>
-    <div class="analyze-status" id="analyze-status"></div>
+    <div class="field">
+      <label class="field-label">Typ av vin</label>
+      <div class="wine-type-grid" id="wine-type-grid">
+        <button class="type-btn" onclick="setWineType('rött')">🍷 Rött</button>
+        <button class="type-btn" onclick="setWineType('vitt')">🥂 Vitt</button>
+        <button class="type-btn" onclick="setWineType('rosé')">🌸 Rosé</button>
+        <button class="type-btn" onclick="setWineType('prosecco')">🍾 Prosecco</button>
+        <button class="type-btn" onclick="setWineType('champagne')">✨ Champagne</button>
+        <button class="type-btn" onclick="setWineType('mousserande')">🫧 Mousserande</button>
+        <button class="type-btn" onclick="setWineType('cava')">🥂 Cava</button>
+        <button class="type-btn" onclick="setWineType('dessertvin')">🍯 Dessertvin</button>
+        <button class="type-btn" onclick="setWineType('portvin')">🪴 Portvin</button>
+      </div>
+    </div>
 
-    <div class="form-grid">
-      <div class="field full">
-        <label>Vinets namn</label>
-        <input type="text" id="f-name" placeholder="t.ex. Barolo Reserva">
+    <div class="status-toggle">
+      <button class="status-btn active-buy" id="btn-buy" onclick="setStatus('buy')">✦ Köp igen</button>
+      <button class="status-btn" id="btn-avoid" onclick="setStatus('avoid')">✕ Undvik</button>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Vinnamn *</label>
+      <input class="field-input" id="f-name" placeholder="ex. Barolo Riserva">
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label class="field-label">Producent</label>
+        <input class="field-input" id="f-producer" placeholder="ex. Antinori">
       </div>
-      <div class="field">
-        <label>Producent</label>
-        <input type="text" id="f-producer" placeholder="t.ex. Giacomo Conterno">
+      <div>
+        <label class="field-label">Årgång</label>
+        <input class="field-input" id="f-year" placeholder="ex. 2019" type="number">
       </div>
-      <div class="field">
-        <label>Årgång</label>
-        <input type="number" id="f-vintage" placeholder="t.ex. 2019" inputmode="numeric">
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label class="field-label">Region</label>
+        <input class="field-input" id="f-region" placeholder="ex. Piemonte">
       </div>
-      <div class="field">
-        <label>Region</label>
-        <input type="text" id="f-region" placeholder="t.ex. Piemonte, Italien">
-      </div>
-      <div class="field">
-        <label>Pris (kr)</label>
-        <input type="number" id="f-price" placeholder="t.ex. 349" inputmode="numeric">
-      </div>
-      <div class="field full">
-        <label>Vintyp</label>
-        <select id="f-type"></select>
+      <div>
+        <label class="field-label">Pris (kr)</label>
+        <input class="field-input" id="f-price" placeholder="ex. 249" type="number">
       </div>
     </div>
 
     <div class="field">
-      <label>Betyg (1–10)</label>
-      <div style="display:flex;align-items:center">
-        <div class="stars-input" id="stars-input"></div>
-        <span class="rating-label" id="rating-label"></span>
+      <label class="field-label">Betyg</label>
+      <div class="stars-input" id="stars-input">
+        <button class="star-btn" onclick="setRating(1)">★</button>
+        <button class="star-btn" onclick="setRating(2)">★</button>
+        <button class="star-btn" onclick="setRating(3)">★</button>
+        <button class="star-btn" onclick="setRating(4)">★</button>
+        <button class="star-btn" onclick="setRating(5)">★</button>
       </div>
     </div>
 
-    <div class="tag-row">
-      <button class="tag-btn buy active" id="tag-buy" onclick="setTag('köp igen')">✓ Köp igen</button>
-      <button class="tag-btn avoid" id="tag-avoid" onclick="setTag('undvik')">✕ Undvik</button>
+    <div class="field-row">
+      <div>
+        <label class="field-label">Druva</label>
+        <input class="field-input" id="f-grape" placeholder="ex. Nebbiolo">
+      </div>
+      <div>
+        <label class="field-label">Klassificering</label>
+        <input class="field-input" id="f-classification" placeholder="ex. DOCG, AOP">
+      </div>
     </div>
 
     <div class="field">
-      <label>Anteckningar</label>
-      <textarea id="f-notes" rows="3" placeholder="Smak, doft, tillfälle…"></textarea>
+      <label class="field-label">Anteckningar</label>
+      <textarea class="field-input" id="f-notes" placeholder="Smakprofil, tillfälle, tankar..."></textarea>
     </div>
 
-    <button class="btn-save" onclick="saveWine()">Spara vin</button>
+    <div class="form-actions">
+      <button class="save-btn" onclick="saveWine()">Spara vin</button>
+      <button class="cancel-btn" onclick="closeForm()">Avbryt</button>
+    </div>
+    <button class="delete-btn" id="delete-btn" style="display:none" onclick="deleteWine()">Ta bort detta vin</button>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="overlay" id="detail-overlay" style="display:none" onclick="overlayClickDetail(event)">
+  <div class="sheet" id="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="detail-photo" id="d-photo">
+      <img id="d-photo-img" src="" style="display:none">
+      <span id="d-photo-placeholder" style="font-size:48px;opacity:0.3">🍷</span>
+    </div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px">
+      <div class="detail-name" id="d-name"></div>
+      <div class="badge" id="d-badge"></div>
+    </div>
+    <div class="detail-producer" id="d-producer"></div>
+    <div class="detail-tags" id="d-tags"></div>
+    <div class="detail-stars" id="d-stars"></div>
+    <div class="detail-notes" id="d-notes"></div>
+    <div class="detail-actions">
+      <button class="edit-btn" onclick="editFromDetail()">✎ Redigera</button>
+      <button class="cancel-btn" onclick="closeDetail()">Stäng</button>
+    </div>
   </div>
 </div>
 
 <script>
-const WINE_TYPES = [
-  { value: "rött", label: "Rött", emoji: "🍷" },
-  { value: "vitt", label: "Vitt", emoji: "🥂" },
-  { value: "rosé", label: "Rosé", emoji: "🌸" },
-  { value: "prosecco", label: "Prosecco", emoji: "✨" },
-  { value: "champagne", label: "Champagne", emoji: "🍾" },
-  { value: "mousserande", label: "Mousserande", emoji: "💫" },
-  { value: "cava", label: "Cava", emoji: "🎊" },
-  { value: "dessertvin", label: "Dessertvin", emoji: "🍯" },
-  { value: "portvin", label: "Portvin", emoji: "🏺" },
-];
-
+const STORAGE_KEY = 'wine_registry_v2';
 let wines = [];
-let filterType = "alla";
-let filterTag = "alla";
-let sortBy = "nyast";
-let currentRating = 0;
-let currentTag = "köp igen";
+let filter = 'all';
+let editingId = null;
+let currentRating = 3;
+let currentStatus = 'buy';
 let currentPhoto = null;
-let editId = null;
-let expandedId = null;
+let currentWineType = '';
+let detailId = null;
 
-// LOAD
-try { 
-  wines = JSON.parse(localStorage.getItem("cave-wines") || "[]");
-  // Smart migration: if wines have old 1-5 scale ratings, convert to 1-10
-  if (!localStorage.getItem("cave-rating-migrated") && wines.length > 0) {
-    const needsMigration = wines.some(w => w.rating > 0 && w.rating <= 5);
-    if (needsMigration) {
-      wines = wines.map(w => ({ ...w, rating: w.rating > 0 ? w.rating * 2 : 0 }));
-      localStorage.setItem("cave-wines", JSON.stringify(wines));
-    }
-    localStorage.setItem("cave-rating-migrated", "1");
-  }
-} catch(e) { wines = []; }
+// Load
+try { wines = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { wines = []; }
 
 function save() {
-  try { localStorage.setItem("cave-wines", JSON.stringify(wines)); } catch(e) {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(wines)); } catch {}
 }
 
-// BUILD SELECT
-const sel = document.getElementById("f-type");
-WINE_TYPES.forEach(t => {
-  const o = document.createElement("option");
-  o.value = t.value;
-  o.textContent = t.emoji + " " + t.label;
-  sel.appendChild(o);
-});
+function setFilter(f) {
+  filter = f;
+  ['all','buy','avoid'].forEach(v => {
+    const btn = document.getElementById('f-'+v);
+    btn.className = 'filter-btn' + (v === f ? ' active-'+v : '');
+  });
+  renderGrid();
+}
 
-// STARS (1-10, shown as 10 smaller stars)
-function buildStars(rating) {
-  const wrap = document.getElementById("stars-input");
-  const label = document.getElementById("rating-label");
-  wrap.innerHTML = "";
-  for (let i = 1; i <= 10; i++) {
-    const btn = document.createElement("button");
-    btn.className = "star-btn" + (i <= rating ? " filled" : "");
-    btn.textContent = "★";
-    btn.onclick = () => { currentRating = i; buildStars(i); };
-    wrap.appendChild(btn);
+function renderGrid() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = wines.filter(w => {
+    if (filter !== 'all' && w.status !== filter) return false;
+    return !q || w.name.toLowerCase().includes(q)
+      || (w.producer||'').toLowerCase().includes(q)
+      || (w.region||'').toLowerCase().includes(q);
+  });
+
+  document.getElementById('stat-total').textContent = wines.length;
+  document.getElementById('stat-buy').textContent = wines.filter(w=>w.status==='buy').length;
+  document.getElementById('stat-avoid').textContent = wines.filter(w=>w.status==='avoid').length;
+
+  const c = document.getElementById('grid-container');
+  if (filtered.length === 0) {
+    c.innerHTML = `<div class="empty">
+      <div class="empty-icon">🍾</div>
+      <div class="empty-text">${wines.length===0?'Inga viner ännu — lägg till ditt första!':'Inga viner matchar.'}</div>
+    </div>`;
+    return;
   }
-  if (label) label.textContent = rating > 0 ? rating + "/10" : "";
-}
-buildStars(0);
 
-function setTag(tag) {
-  currentTag = tag;
-  document.getElementById("tag-buy").className = "tag-btn buy" + (tag === "köp igen" ? " active" : "");
-  document.getElementById("tag-avoid").className = "tag-btn avoid" + (tag === "undvik" ? " active" : "");
+  c.innerHTML = `<div class="grid">${filtered.map(w => cardHTML(w)).join('')}</div>`;
 }
 
-// ⚠️ Klistra in din Anthropic API-nyckel här:
-const ANTHROPIC_API_KEY = "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";
+function cardHTML(w) {
+  const stars = [1,2,3,4,5].map(s =>
+    `<span class="${s<=w.rating?'star-on':'star-off'}">★</span>`).join('');
+  const photoHTML = w.photo
+    ? `<img src="${w.photo}" alt="">`
+    : `<span class="card-photo-placeholder">🍷</span>`;
+  const badgeClass = w.status==='buy'?'badge-buy':'badge-avoid';
+  const badgeLabel = w.status==='buy'?'✦ Köp':'✕ Undvik';
+  const tags = [
+    w.wineType ? `<span class="tag" style="color:#c8a96e;background:rgba(200,169,110,0.1)">${w.wineType}</span>` : '',
+    w.grape ? `<span class="tag" style="color:#b08060;background:rgba(176,128,96,0.1)">${w.grape}</span>` : '',
+    w.classification ? `<span class="tag" style="color:#9a8a7a;background:rgba(255,255,255,0.05)">${w.classification}</span>` : '',
+    w.year ? `<span class="tag tag-year">${w.year}</span>` : '',
+    w.region ? `<span class="tag tag-region">${w.region}</span>` : '',
+    w.price ? `<span class="tag tag-price">${w.price} kr</span>` : '',
+  ].join('');
 
-function compressImage(dataUrl, maxWidth = 1024) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const scale = Math.min(1, maxWidth / img.width);
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/jpeg", 0.8));
-    };
-    img.src = dataUrl;
+  return `<div class="card" onclick="openDetail(${w.id})">
+    <div class="card-photo">
+      ${photoHTML}
+      <div class="badge ${badgeClass}">${badgeLabel}</div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">${esc(w.name)}</div>
+      ${w.producer ? `<div class="card-producer">${esc(w.producer)}</div>` : ''}
+      <div class="card-tags">${tags}</div>
+      <div class="stars">${stars}</div>
+      ${w.notes ? `<div class="card-notes">${esc(w.notes)}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// FORM
+function openForm(id) {
+  editingId = id || null;
+  const w = id ? wines.find(x => x.id === id) : null;
+
+  document.getElementById('form-title').textContent = w ? 'Redigera vin' : 'Registrera vin';
+  document.getElementById('f-name').value = w?.name || '';
+  document.getElementById('f-producer').value = w?.producer || '';
+  document.getElementById('f-year').value = w?.year || '';
+  document.getElementById('f-region').value = w?.region || '';
+  document.getElementById('f-price').value = w?.price || '';
+  document.getElementById('f-grape').value = w?.grape || '';
+  document.getElementById('f-classification').value = w?.classification || '';
+  document.getElementById('f-notes').value = w?.notes || '';
+  document.getElementById('delete-btn').style.display = w ? 'block' : 'none';
+
+  currentRating = w?.rating || 3;
+  currentStatus = w?.status || 'buy';
+  currentPhoto = w?.photo || null;
+  currentWineType = w?.wineType || '';
+
+  setStatus(currentStatus);
+  setRating(currentRating);
+  // reset type buttons then activate
+  document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+  if (currentWineType) setWineType(currentWineType);
+
+  const img = document.getElementById('photo-preview');
+  const ph = document.getElementById('photo-placeholder');
+  if (currentPhoto) { img.src = currentPhoto; img.style.display='block'; ph.style.display='none'; }
+  else { img.style.display='none'; ph.style.display='block'; }
+
+  document.getElementById('photo-input').value = '';
+  document.getElementById('form-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('f-name').focus(), 100);
+}
+
+function closeForm() {
+  document.getElementById('form-overlay').style.display = 'none';
+}
+
+function overlayClickForm(e) {
+  if (e.target.id === 'form-overlay') closeForm();
+}
+
+function setWineType(t) {
+  currentWineType = t;
+  document.querySelectorAll('.type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(t));
   });
 }
 
-async function analyzePhoto() {
-  if (!currentPhoto) return;
-  const btn = document.getElementById("btn-analyze");
-  const status = document.getElementById("analyze-status");
-  btn.disabled = true;
-  status.textContent = "Analyserar etiketten…";
-
-  try {
-    // Compress image before sending to API
-    const compressed = await compressImage(currentPhoto, 800);
-    const base64 = compressed.split(",")[1];
-    const mediaType = compressed.split(";")[0].split(":")[1];
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{
-          role: "user",
-          content: [
-            {
-              type: "image",
-              source: { type: "base64", media_type: mediaType, data: base64 }
-            },
-            {
-              type: "text",
-              text: `Analysera den här vinflaskans etikett och extrahera information. Svara ENDAST med ett JSON-objekt, inga andra ord:
-{"name":"vinets namn","producer":"producentens namn","vintage":"årgång som fyrsiffrigt tal eller tom sträng","region":"region och land","type":"ett av: rött|vitt|rosé|prosecco|champagne|mousserande|cava|dessertvin|portvin"}
-Om du inte kan läsa ett fält, använd tom sträng "".`
-            }
-          ]
-        }]
-      })
-    });
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text || "";
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Inget JSON i svaret");
-    const json = JSON.parse(match[0]);
-
-    if (json.name) document.getElementById("f-name").value = json.name;
-    if (json.producer) document.getElementById("f-producer").value = json.producer;
-    if (json.vintage) document.getElementById("f-vintage").value = json.vintage;
-    if (json.region) document.getElementById("f-region").value = json.region;
-    if (json.type) document.getElementById("f-type").value = json.type;
-
-    status.textContent = "✓ Klart! Kontrollera och justera om det behövs.";
-    status.style.color = "var(--green)";
-  } catch(e) {
-    status.textContent = "Fel: " + (e.message || JSON.stringify(e));
-    status.style.color = "var(--red)";
-  }
-  btn.disabled = false;
+function setStatus(s) {
+  currentStatus = s;
+  document.getElementById('btn-buy').className = 'status-btn' + (s==='buy'?' active-buy':'');
+  document.getElementById('btn-avoid').className = 'status-btn' + (s==='avoid'?' active-avoid':'');
 }
 
-function showPhotoOptions() {
-  const choice = confirm("Ta foto med kameran?\n\nOK = Kamera\nAvbryt = Välj från biblioteket");
-  if (choice) {
-    document.getElementById("photo-camera").click();
-  } else {
-    document.getElementById("photo-input").click();
-  }
+function setRating(r) {
+  currentRating = r;
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.style.color = i < r ? '#c8a96e' : 'rgba(255,255,255,0.15)';
+  });
 }
 
 function handlePhoto(e) {
@@ -694,241 +836,103 @@ function handlePhoto(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     currentPhoto = ev.target.result;
-    const el = document.getElementById("photo-upload");
-    el.style.backgroundImage = `url(${currentPhoto})`;
-    document.getElementById("photo-placeholder").style.display = "none";
-    document.getElementById("btn-analyze").disabled = false;
-    document.getElementById("analyze-status").textContent = "";
-    document.getElementById("analyze-status").style.color = "var(--muted)";
+    const img = document.getElementById('photo-preview');
+    img.src = currentPhoto;
+    img.style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
   };
   reader.readAsDataURL(file);
 }
 
-// FORM OPEN/CLOSE
-function openForm(wine) {
-  editId = wine ? wine.id : null;
-  document.getElementById("form-title").textContent = wine ? "REDIGERA VIN" : "NYTT VIN";
-  document.getElementById("f-name").value = wine ? wine.name : "";
-  document.getElementById("f-producer").value = wine ? wine.producer : "";
-  document.getElementById("f-vintage").value = wine ? wine.vintage : "";
-  document.getElementById("f-region").value = wine ? wine.region : "";
-  document.getElementById("f-price").value = wine ? wine.price : "";
-  document.getElementById("f-type").value = wine ? wine.type : "rött";
-  document.getElementById("f-notes").value = wine ? wine.notes : "";
-  currentRating = wine ? wine.rating : 0;
-  currentTag = wine ? wine.tag : "köp igen";
-  currentPhoto = wine ? wine.photo : null;
-  buildStars(currentRating);
-  setTag(currentTag);
-  const pu = document.getElementById("photo-upload");
-  pu.style.backgroundImage = currentPhoto ? `url(${currentPhoto})` : "";
-  document.getElementById("photo-placeholder").style.display = currentPhoto ? "none" : "flex";
-  document.getElementById("btn-analyze").disabled = !currentPhoto;
-  document.getElementById("analyze-status").textContent = "";
-  document.getElementById("analyze-status").style.color = "var(--muted)";
-  document.getElementById("photo-input").value = "";
-  document.getElementById("form-panel").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-
-function closeForm() {
-  document.getElementById("form-panel").classList.remove("open");
-  document.body.style.overflow = "";
-}
-
 function saveWine() {
-  const name = document.getElementById("f-name").value.trim();
-  if (!name) { document.getElementById("f-name").focus(); return; }
-  
-  // Check for duplicate (same name + producer, excluding current wine if editing)
-  const producer = document.getElementById("f-producer").value.trim();
-  const duplicate = wines.find(w => 
-    w.id !== editId &&
-    w.name.toLowerCase() === name.toLowerCase() &&
-    (w.producer||"").toLowerCase() === producer.toLowerCase()
-  );
-  if (duplicate) {
-    const proceed = confirm(`"${name}" av ${producer || "okänd producent"} finns redan i registret.\n\nVill du lägga till det ändå?`);
-    if (!proceed) return;
-  }
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Ange ett vinnamn'); return; }
   const wine = {
-    id: editId || Date.now().toString(),
+    id: editingId || Date.now(),
     name,
-    producer: document.getElementById("f-producer").value.trim(),
-    vintage: document.getElementById("f-vintage").value.trim(),
-    region: document.getElementById("f-region").value.trim(),
-    price: document.getElementById("f-price").value.trim(),
-    type: document.getElementById("f-type").value,
-    notes: document.getElementById("f-notes").value.trim(),
+    producer: document.getElementById('f-producer').value.trim(),
+    year: document.getElementById('f-year').value.trim(),
+    region: document.getElementById('f-region').value.trim(),
+    price: document.getElementById('f-price').value.trim(),
+    grape: document.getElementById('f-grape').value.trim(),
+    classification: document.getElementById('f-classification').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
     rating: currentRating,
-    tag: currentTag,
+    status: currentStatus,
     photo: currentPhoto,
+    wineType: currentWineType,
   };
-  if (editId) {
-    wines = wines.map(w => w.id === editId ? wine : w);
+  if (editingId) {
+    wines = wines.map(w => w.id === editingId ? wine : w);
   } else {
     wines.unshift(wine);
   }
   save();
   closeForm();
-  render();
+  renderGrid();
 }
 
-function deleteWine(id) {
-  if (!confirm("Ta bort vinet?")) return;
-  wines = wines.filter(w => w.id !== id);
-  if (expandedId === id) expandedId = null;
+function deleteWine() {
+  if (!confirm('Ta bort detta vin?')) return;
+  wines = wines.filter(w => w.id !== editingId);
   save();
-  render();
+  closeForm();
+  renderGrid();
 }
 
-// PILLS
-function buildPills() {
-  // Type pills
-  const tp = document.getElementById("type-pills");
-  tp.innerHTML = "";
-  [{ value: "alla", label: "Alla typer", emoji: "" }, ...WINE_TYPES].forEach(t => {
-    const b = document.createElement("button");
-    b.className = "pill" + (filterType === t.value ? " active" : "");
-    b.textContent = (t.emoji ? t.emoji + " " : "") + t.label;
-    b.onclick = () => { filterType = t.value; render(); };
-    tp.appendChild(b);
-  });
+// DETAIL
+function openDetail(id) {
+  detailId = id;
+  const w = wines.find(x => x.id === id);
+  if (!w) return;
 
-  // Tag pills
-  const tagp = document.getElementById("tag-pills");
-  tagp.innerHTML = "";
-  [["alla", "Alla"], ["köp igen", "✓ Köp igen"], ["undvik", "✕ Undvik"]].forEach(([v, l]) => {
-    const b = document.createElement("button");
-    b.className = "pill" + (filterTag === v ? " active" : "");
-    b.textContent = l;
-    b.onclick = () => { filterTag = v; render(); };
-    tagp.appendChild(b);
-  });
+  const img = document.getElementById('d-photo-img');
+  const ph = document.getElementById('d-photo-placeholder');
+  if (w.photo) { img.src = w.photo; img.style.display='block'; ph.style.display='none'; }
+  else { img.style.display='none'; ph.style.display='block'; }
 
-  // Sort pills
-  const sp = document.getElementById("sort-pills");
-  sp.innerHTML = "";
-  [["nyast","Nyast"],["betyg","Betyg"],["pris","Pris"],["årgång","Årgång"]].forEach(([v, l]) => {
-    const b = document.createElement("button");
-    b.className = "pill" + (sortBy === v ? " active" : "");
-    b.textContent = l;
-    b.onclick = () => { sortBy = v; render(); };
-    sp.appendChild(b);
-  });
+  document.getElementById('d-name').textContent = w.name;
+  const badge = document.getElementById('d-badge');
+  badge.textContent = w.status==='buy' ? '✦ Köp igen' : '✕ Undvik';
+  badge.className = 'badge ' + (w.status==='buy'?'badge-buy':'badge-avoid');
+  document.getElementById('d-producer').textContent = w.producer || '';
+  document.getElementById('d-producer').style.display = w.producer ? 'block' : 'none';
+
+  const tags = [
+    w.wineType ? `<span class="detail-tag" style="color:#c8a96e;background:rgba(200,169,110,0.1)">${w.wineType}</span>` : '',
+    w.grape ? `<span class="detail-tag" style="color:#b08060;background:rgba(176,128,96,0.1)">${w.grape}</span>` : '',
+    w.classification ? `<span class="detail-tag" style="color:#9a8a7a;background:rgba(255,255,255,0.05)">${w.classification}</span>` : '',
+    w.year ? `<span class="detail-tag tag-year">${w.year}</span>` : '',
+    w.region ? `<span class="detail-tag tag-region">${w.region}</span>` : '',
+    w.price ? `<span class="detail-tag tag-price">${w.price} kr</span>` : '',
+  ].join('');
+  document.getElementById('d-tags').innerHTML = tags;
+
+  document.getElementById('d-stars').innerHTML =
+    [1,2,3,4,5].map(s=>`<span class="${s<=w.rating?'star-on':'star-off'}">★</span>`).join('');
+
+  const notesEl = document.getElementById('d-notes');
+  if (w.notes) { notesEl.textContent = `"${w.notes}"`; notesEl.style.display='block'; }
+  else { notesEl.style.display='none'; }
+
+  document.getElementById('detail-overlay').style.display = 'flex';
 }
 
-function starsHTML(rating) {
-  // Smart convert old 1-5 ratings: if rating <= 5 and was saved before upgrade, scale up
-  // We detect old ratings by checking if they're integers 1-5 (could be old data)
-  // New ratings go up to 10. We store a version flag to know.
-  const display = rating;
-  let html = '<span class="stars-sm">';
-  for (let i = 1; i <= 10; i++) {
-    html += `<span class="${i <= display ? "filled" : ""}">★</span>`;
-  }
-  html += `</span> <span style="font-size:11px;color:var(--gold);margin-left:3px">${display > 0 ? display+"/10" : ""}</span>`;
-  return html;
+function closeDetail() {
+  document.getElementById('detail-overlay').style.display = 'none';
 }
 
-function render() {
-  buildPills();
-  const q = (document.getElementById("search").value || "").toLowerCase();
-  let list = wines.filter(w => {
-    return (
-      (!q || w.name.toLowerCase().includes(q) || (w.producer||"").toLowerCase().includes(q) || (w.region||"").toLowerCase().includes(q)) &&
-      (filterType === "alla" || w.type === filterType) &&
-      (filterTag === "alla" || w.tag === filterTag)
-    );
-  }).sort((a, b) => {
-    if (sortBy === "nyast") return b.id - a.id;
-    if (sortBy === "betyg") return b.rating - a.rating;
-    if (sortBy === "pris") return Number(a.price||0) - Number(b.price||0);
-    if (sortBy === "årgång") return Number(b.vintage||0) - Number(a.vintage||0);
-    return 0;
-  });
-
-  const countEl = document.getElementById("wine-count");
-  countEl.textContent = wines.length + " vin" + (wines.length !== 1 ? "er" : "");
-
-  const container = document.getElementById("wine-list");
-
-  if (list.length === 0) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="empty-emoji">🍷</div>
-        <div class="empty-title">${wines.length === 0 ? "Källaren är tom" : "Inga vin matchar"}</div>
-        <div class="empty-sub">${wines.length === 0 ? "Lägg till ditt första vin ovan" : "Prova andra filter"}</div>
-      </div>`;
-    return;
-  }
-
-  const typeMap = {};
-  WINE_TYPES.forEach(t => typeMap[t.value] = t);
-
-  container.innerHTML = `<div class="wine-grid">${list.map(wine => {
-    const t = typeMap[wine.type] || WINE_TYPES[0];
-    const expanded = expandedId === wine.id;
-    const photoStyle = wine.photo ? `background-image:url(${wine.photo});background-size:cover;background-position:center;` : "";
-    return `
-      <div class="wine-card" id="card-${wine.id}" onclick="toggleCard('${wine.id}')">
-        <div class="card-photo" style="${photoStyle}">
-          ${!wine.photo ? `<div class="card-emoji-bg">${t.emoji}</div>` : ""}
-          <div class="card-type-badge">${t.emoji} ${t.label}</div>
-          <div class="card-tag-badge ${wine.tag === 'köp igen' ? 'buy' : 'avoid'}">${wine.tag === 'köp igen' ? '✓ Köp igen' : '✕ Undvik'}</div>
-        </div>
-        <div class="card-body">
-          <div class="card-name">${escHtml(wine.name)}</div>
-          <div class="card-producer">${[wine.producer, wine.vintage].filter(Boolean).map(escHtml).join(" · ") || "&nbsp;"}</div>
-          ${starsHTML(wine.rating)}
-          ${expanded ? `
-            <div class="card-expanded">
-              ${wine.region ? `<div class="card-detail">📍 ${escHtml(wine.region)}</div>` : ""}
-              ${wine.price ? `<div class="card-detail">💰 ${escHtml(wine.price)} kr</div>` : ""}
-              ${wine.notes ? `<div class="card-notes">${escHtml(wine.notes)}</div>` : ""}
-              <div class="card-actions">
-                <button class="btn-edit" onclick="event.stopPropagation();editWine('${wine.id}')">Redigera</button>
-                <button class="btn-delete" onclick="event.stopPropagation();deleteWine('${wine.id}')">Ta bort</button>
-              </div>
-            </div>` : ""}
-        </div>
-      </div>`;
-  }).join("")}</div>`;
+function overlayClickDetail(e) {
+  if (e.target.id === 'detail-overlay') closeDetail();
 }
 
-function escHtml(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function editFromDetail() {
+  closeDetail();
+  openForm(detailId);
 }
 
-function toggleCard(id) {
-  expandedId = expandedId === id ? null : id;
-  render();
-  if (expandedId) {
-    setTimeout(() => {
-      const el = document.getElementById("card-" + id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }, 50);
-  }
-}
-
-function editWine(id) {
-  const wine = wines.find(w => w.id === id);
-  if (wine) openForm(wine);
-}
-
-// iOS install banner
-const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-const isStandalone = window.navigator.standalone;
-const bannerDismissed = localStorage.getItem("cave-banner-dismissed");
-if (isIOS && !isStandalone && !bannerDismissed) {
-  const banner = document.getElementById("install-banner");
-  banner.style.display = "block";
-  banner.querySelector(".dismiss-banner").addEventListener("click", () => {
-    localStorage.setItem("cave-banner-dismissed", "1");
-  });
-}
-
-render();
+// Init
+renderGrid();
 </script>
 </body>
 </html>
